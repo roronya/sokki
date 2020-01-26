@@ -20,6 +20,9 @@ func New(input string) *Lexer {
 	return l
 }
 
+// 各トークンに一致するか正規表現で調べる
+// positionは一致した文字列のruneのサイズだけ進める
+// newTokenでは進めたサイズだけ減らしてスライスする
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
 	if l.input[l.position] == '\n' {
