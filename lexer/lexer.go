@@ -8,7 +8,7 @@ import (
 
 var SHIFT_REGEXP = regexp.MustCompile(`^ >$`)
 var MORESHIFT_REGEXP = regexp.MustCompile(`^ >>$`)
-var PARAGRAPH_REGEXP = regexp.MustCompile(`^([^\n]*)`)
+var PARAGRAPH_REGEXP = regexp.MustCompile(`^([^\n]*)`) //TODO SHIFTの対応
 
 type Lexer struct {
 	input    []rune
@@ -26,15 +26,14 @@ func (l *Lexer) NextToken() token.Token {
 		l.position++
 		return newToken(token.NEWLINE, l.input[l.position-1:l.position])
 	}
-	// 正規表現で抜き出す
 	s := string(l.input[l.position:])
 	pr := PARAGRAPH_REGEXP.FindStringSubmatch(s)
-
 	if pr != nil {
 		size := len([]rune(pr[1]))
 		l.position += size
 		return newToken(token.PARAGRAPH, l.input[l.position-size:l.position])
 	}
+	// TODO: SHIFTの抜き出し
 	return tok
 }
 
