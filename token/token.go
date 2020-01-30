@@ -8,7 +8,8 @@ type Token struct {
 }
 
 const (
-	EOD = "EOD" // End Of Document
+	EOD     = "EOD" // End Of Document
+	NEWLINE = "NEWLINE"
 
 	// 識別子 + リテラル
 	PARAGRAPH = "PARAGRAPH"
@@ -16,7 +17,4 @@ const (
 	// 演算子
 	SHIFT     = " >"
 	MORESHIFT = " >>"
-
-	// FIXME: どう扱うものかよくわからない
-	NEWLINE = "\n"
 )

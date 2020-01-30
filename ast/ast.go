@@ -20,7 +20,7 @@ type Expression interface {
 type Document struct {
 	Left   []Paragraph
 	Middle []Paragraph
-	right  []Paragraph
+	Right  []Paragraph
 }
 
 type Paragraph struct {
@@ -30,9 +30,9 @@ type Paragraph struct {
 }
 
 func (p *Paragraph) expressionNode() {}
-func (p *Paragraph) TokenLiteral() {
+func (p *Paragraph) TokenLiteral() string {
 	return p.Token.Literal
 }
-func (p *Paragraph) String() {
+func (p *Paragraph) String() string {
 	return p.Value
 }
