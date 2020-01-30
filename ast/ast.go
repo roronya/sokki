@@ -23,16 +23,26 @@ type Document struct {
 	Right  []Paragraph
 }
 
+func (d *Document) expressionNode() {}
+func (d *Document) TokenLiteral() string {
+	// TODO
+	return ""
+}
+func (d *Document) String() string {
+	// TODO
+	return ""
+}
+
 type Paragraph struct {
 	Token   token.Token
 	Value   string
 	Section int
 }
 
-func (p *Paragraph) expressionNode() {}
-func (p *Paragraph) TokenLiteral() string {
-	return p.Token.Literal
+func (pr *Paragraph) expressionNode() {}
+func (pr *Paragraph) TokenLiteral() string {
+	return pr.Token.Literal
 }
-func (p *Paragraph) String() string {
-	return p.Value
+func (pr *Paragraph) String() string {
+	return pr.Value
 }
