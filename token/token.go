@@ -8,6 +8,8 @@ type Token struct {
 }
 
 const (
+	EOD = "EOD" // End Of Document
+
 	// 識別子 + リテラル
 	PARAGRAPH = "PARAGRAPH"
 

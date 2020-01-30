@@ -35,6 +35,8 @@ func TestNextToken(t *testing.T) {
 		{token.PARAGRAPH, "今日も天使のような無垢な笑顔で、"},
 		{token.NEWLINE, "\n"},
 		{token.PARAGRAPH, "背の高い門をくぐり抜けていく。"},
+		{token.NEWLINE, "\n"},
+		{token.EOD, ""},
 	}
 
 	l := New(input)

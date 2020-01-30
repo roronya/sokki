@@ -25,6 +25,9 @@ func New(input string) *Lexer {
 // newTokenでは進めたサイズだけ減らしてスライスする
 func (l *Lexer) NextToken() token.Token {
 	var tok token.Token
+	if l.position >= len(l.input) {
+		return newToken(token.EOD, []rune(""))
+	}
 	if l.input[l.position] == '\n' {
 		l.position++
 		return newToken(token.NEWLINE, l.input[l.position-1:l.position])
