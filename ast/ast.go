@@ -1,6 +1,10 @@
 package ast
 
-import "github.com/roronya/sokki/token"
+import (
+	"bytes"
+
+	"github.com/roronya/sokki/token"
+)
 
 type Node interface {
 	TokenLiteral() string
@@ -18,25 +22,52 @@ type Expression interface {
 }
 
 type Document struct {
+	Sections []Section
+}
+
+func (d *Document) expressionNode() {}
+func (d *Document) TokenLiteral() string {
+	if len(d.Sections) > 0 {
+		return d.Sections[0].TokenLiteral()
+	}
+	return ""
+}
+func (d *Document) String() string {
+	var out bytes.Buffer
+
+	for _, s := range d.Sections {
+		out.WriteString(s.String())
+	}
+
+	return out.String()
+}
+
+type Section struct {
+	Token  token.Token
 	Left   []Paragraph
 	Middle []Paragraph
 	Right  []Paragraph
 }
 
-func (d *Document) expressionNode() {}
-func (d *Document) TokenLiteral() string {
-	// TODO
+func (s *Section) expressionNode() {}
+func (s *Section) TokenLiteral() string {
+	if len(s.Left) > 0 {
+		return s.Left[0].TokenLiteral()
+	}
 	return ""
 }
-func (d *Document) String() string {
-	// TODO
-	return ""
+func (s *Section) String() string {
+	var out bytes.Buffer
+	for _, p := range s.Left {
+		out.WriteString(p.String())
+	}
+
+	return out.String()
 }
 
 type Paragraph struct {
-	Token   token.Token
-	Value   string
-	Section int
+	Token token.Token
+	Value string
 }
 
 func (pr *Paragraph) expressionNode() {}

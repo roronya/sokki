@@ -11,8 +11,8 @@ const (
 	EOD     = "EOD" // End Of Document
 	NEWLINE = "NEWLINE"
 
-	// 識別子 + リテラル
 	PARAGRAPH = "PARAGRAPH"
+	SECTION   = "SECTION"
 
 	// 演算子
 	SHIFT     = " >"
