@@ -8,15 +8,23 @@ import (
 )
 
 func TestLeftParagraph(t *testing.T) {
-	input := `マリア様の庭に集う乙女達が、
+	input := `マリア様の庭に集う少女たちが、
 今日も天使のような無垢な笑顔で、
-背の高い門をくぐり抜けていく。`
+背の高い門をくぐり抜けていく。
+
+汚れを知らない心身を包むのは、深い色の制服。
+スカートのプリーツは乱さないように、
+白いセーラーカラーは翻さないように、
+ゆっくりと歩くのが、ここでのたしなみ。
+
+私立リリアン女学園。ここは乙女の園。
+`
 
 	l := lexer.New(input)
 	p := New(l)
 
 	dcmt := p.ParseDocument()
-	if len(dcmt.Sections) != 1 {
+	if len(dcmt.Sections) != 3 {
 		t.Fatalf("document.Sections does not contain 1 section. got=%d",
 			len(dcmt.Sections))
 	}
@@ -36,7 +44,7 @@ func TestLeftParagraph(t *testing.T) {
 	}
 
 	expected := []string{
-		"マリア様の庭に集う乙女達が、",
+		"マリア様の庭に集う少女たちが、",
 		"今日も天使のような無垢な笑顔で、",
 		"背の高い門をくぐり抜けていく。",
 	}
