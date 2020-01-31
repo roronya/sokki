@@ -23,7 +23,15 @@ func TestNew(t *testing.T) {
 func TestNextToken(t *testing.T) {
 	input := `マリア様の庭に集う少女たちが、
 今日も天使のような無垢な笑顔で、
-背の高い門をくぐり抜けていく。`
+背の高い門をくぐり抜けていく。
+
+汚れを知らない心身を包むのは、深い色の制服。
+スカートのプリーツは乱さないように、
+白いセーラーカラーは翻さないように、
+ゆっくりと歩くのが、ここでのたしなみ。
+
+私立リリアン女学園。ここは乙女の園。
+`
 
 	tests := []struct {
 		expectedType    token.TokenType
@@ -34,6 +42,19 @@ func TestNextToken(t *testing.T) {
 		{token.PARAGRAPH, "今日も天使のような無垢な笑顔で、"},
 		{token.NEWLINE, "\n"},
 		{token.PARAGRAPH, "背の高い門をくぐり抜けていく。"},
+		{token.NEWLINE, "\n"},
+		{token.NEWLINE, "\n"},
+		{token.PARAGRAPH, "汚れを知らない心身を包むのは、深い色の制服。"},
+		{token.NEWLINE, "\n"},
+		{token.PARAGRAPH, "スカートのプリーツは乱さないように、"},
+		{token.NEWLINE, "\n"},
+		{token.PARAGRAPH, "白いセーラーカラーは翻さないように、"},
+		{token.NEWLINE, "\n"},
+		{token.PARAGRAPH, "ゆっくりと歩くのが、ここでのたしなみ。"},
+		{token.NEWLINE, "\n"},
+		{token.NEWLINE, "\n"},
+		{token.PARAGRAPH, "私立リリアン女学園。ここは乙女の園。"},
+		{token.NEWLINE, "\n"},
 		{token.EOD, ""},
 	}
 
