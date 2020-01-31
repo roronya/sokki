@@ -8,25 +8,47 @@ import (
 )
 
 func TestLeftParagraph(t *testing.T) {
-	input := `私立リリアン女学園。ここは乙女の園`
+	input := `マリア様の庭に集う乙女達が、
+今日も天使のような無垢な笑顔で、
+背の高い門をくぐり抜けていく。`
 
 	l := lexer.New(input)
 	p := New(l)
 
 	dcmt := p.ParseDocument()
-	if len(dcmt.Left) != 1 {
-		t.Fatalf("document.left does not contain 1 paragraph. got=%d",
-			len(dcmt.Left))
+	if len(dcmt.Sections) != 1 {
+		t.Fatalf("document.Sections does not contain 1 section. got=%d",
+			len(dcmt.Sections))
 	}
 
-	pr := dcmt.Left[0]
-	if pr.Token.Type != token.PARAGRAPH {
-		t.Errorf("pr not *ast.Paragraph. got=%T", dcmt.Left[0])
+	s := dcmt.Sections[0]
+	if len(s.Left) != 3 {
+		t.Fatalf("s.Left does not contain 3 section. got=%d",
+			len(s.Left))
+	}
+	if len(s.Middle) != 0 {
+		t.Fatalf("s.Middle does not contain 0 section. got=%d",
+			len(s.Middle))
+	}
+	if len(s.Right) != 0 {
+		t.Fatalf("s.Right does not contain 0 section. got=%d",
+			len(s.Right))
 	}
 
-	val := pr.Value
-	if val != "私立リリアン女学園。ここは乙女の園" {
-		t.Errorf("pr.Value not %s. got=%s", "私立リリアン女学園。ここは乙女の園", pr.Value)
+	expected := []string{
+		"マリア様の庭に集う乙女達が、",
+		"今日も天使のような無垢な笑顔で、",
+		"背の高い門をくぐり抜けていく。",
 	}
+	for i, e := range expected {
+		pr := s.Left[i]
+		if pr.Token.Type != token.PARAGRAPH {
+			t.Errorf("pr is not PARAGRAPH. got=%T", pr)
+		}
 
+		val := pr.Value
+		if val != e {
+			t.Errorf("pr.Value not %s. got=%s", e, pr.Value)
+		}
+	}
 }

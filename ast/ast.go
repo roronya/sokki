@@ -22,7 +22,7 @@ type Expression interface {
 }
 
 type Document struct {
-	Sections []Section
+	Sections []*Section
 }
 
 func (d *Document) expressionNode() {}
@@ -43,10 +43,10 @@ func (d *Document) String() string {
 }
 
 type Section struct {
-	Token  token.Token
-	Left   []Paragraph
-	Middle []Paragraph
-	Right  []Paragraph
+	Id     int
+	Left   []*Paragraph
+	Middle []*Paragraph
+	Right  []*Paragraph
 }
 
 func (s *Section) expressionNode() {}

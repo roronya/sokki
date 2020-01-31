@@ -2,7 +2,6 @@ package evaluator
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/roronya/sokki/ast"
 )
@@ -18,33 +17,25 @@ func Eval(node ast.Node) string {
 }
 
 func evalDocument(node *ast.Document) string {
-	left := []string{}
-	middle := []string{}
-	right := []string{}
-	for _, pr := range node.Left {
-		left = append(left, Eval(&pr))
-	}
-	for _, pr := range node.Middle {
-		middle = append(middle, Eval(&pr))
-	}
-	for _, pr := range node.Right {
-		right = append(right, Eval(&pr))
-	}
-	leftJoined := strings.Join(left, "")
-	middleJoined := strings.Join(middle, "")
-	rightJoined := strings.Join(right, "")
-	return fmt.Sprintf(`<html>
+	html := `<html>
+<head>
+<style>
+body {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+}
+</style>
 <body>
-<section>
-%s
-</section>
-<section>
-%s
-</section>
-<section>
-%s
-</section>
-</body>
-</html>
-`, leftJoined, middleJoined, rightJoined)
+`
+	for _, s := range node.Left {
+		html += Eval(&s)
+	}
+	for _, s := range node.Middle {
+		html += Eval(&s)
+	}
+	for _, s := range node.Right {
+		html += Eval(&s)
+	}
+	html += "</body></html>"
+	return html
 }

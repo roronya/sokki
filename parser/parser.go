@@ -39,19 +39,44 @@ func (p *Parser) nextToken() {
 }
 
 func (p *Parser) ParseDocument() *ast.Document {
-	dcmt := &ast.Document{}
-	dcmt.Left = []ast.Paragraph{}
+	dcmt := &ast.Document{
+		Sections: []*ast.Section{},
+	}
+	id := 0
 	for p.curToken.Type != token.EOD {
-		// TODO: SHIFTやMORESHIFTの対応
-		pr := ast.Paragraph{
-			Token:   p.curToken,
-			Value:   p.curToken.Literal,
-			Section: p.section,
+		s := p.parseSection(id)
+		if s != nil {
+			dcmt.Sections = append(dcmt.Sections, s)
 		}
-		dcmt.Left = append(dcmt.Left, pr)
-
 		p.nextToken()
-		p.section++
+		id++
 	}
 	return dcmt
+}
+
+func (p *Parser) parseSection(id int) *ast.Section {
+	// TODO: skip NEWLINE
+	s := &ast.Section{
+		Id:     id,
+		Left:   []*ast.Paragraph{},
+		Middle: []*ast.Paragraph{},
+		Right:  []*ast.Paragraph{},
+	}
+	for p.curToken.Type != token.EOD && p.curToken.Type != token.NEWLINE {
+		// TODO: SHIFTやMORESHIFTの対応
+		if p.curToken.Type == token.PARAGRAPH {
+			pr := &ast.Paragraph{
+				Token: p.curToken,
+				Value: p.curToken.Literal,
+			}
+			s.Left = append(s.Left, pr)
+			p.nextToken()
+
+			if p.curToken.Type == token.NEWLINE {
+				p.nextToken()
+			}
+		}
+	}
+
+	return s
 }
