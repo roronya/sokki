@@ -28,29 +28,38 @@ grid-template-columns: 1fr 1fr 1fr;
 <body>
 `
 	// HTMLの上から順番に選択されるので、各カラムを混ぜずに固めておく
+	left := ""
+	middle := ""
+	right := ""
 	for _, s := range node.Sections {
-		html += fmt.Sprintf("<div style=\"grid-column: %d; grid-row: %d;\">\n", 0, s.Id)
-		for _, pr := range s.Left {
-			html += Eval(pr)
+		if len(s.Left) != 0 {
+			left += fmt.Sprintf("<div style=\"grid-column: %d; grid-row: %d;\">\n", 0, s.Id)
+			for _, pr := range s.Left {
+				left += Eval(pr)
+			}
+			left += "</div>\n"
 		}
-		html += "</div>\n"
-	}
 
-	for _, s := range node.Sections {
-		html += fmt.Sprintf("<div style=\"grid-column: %d; grid-row: %d;\">\n", 1, s.Id)
-		for _, pr := range s.Middle {
-			html += Eval(pr)
+		if len(s.Middle) != 0 {
+			middle += fmt.Sprintf("<div style=\"grid-column: %d; grid-row: %d;\">\n", 1, s.Id)
+			for _, pr := range s.Middle {
+				middle += Eval(pr)
+			}
+			middle += "</div>\n"
 		}
-		html += "</div>\n"
-	}
 
-	for _, s := range node.Sections {
-		html += fmt.Sprintf("<div style=\"grid-column: %d; grid-row: %d;\">\n", 2, s.Id)
-		for _, pr := range s.Right {
-			html += Eval(pr)
+		if len(s.Right) != 0 {
+			right += fmt.Sprintf("<div style=\"grid-column: %d; grid-row: %d;\">\n", 2, s.Id)
+			for _, pr := range s.Right {
+				right += Eval(pr)
+			}
+			right += "</div>\n"
+
 		}
-		html += "</div>\n"
 	}
+	html += left
+	html += right
+	html += middle
 	html += "</body>\n</html>"
 	return html
 }
