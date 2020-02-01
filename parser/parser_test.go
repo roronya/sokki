@@ -139,7 +139,7 @@ bbb
 
 func TestStartWithoutParagraph(t *testing.T) {
 	input := ` >>aaa
-bbb
+ bbb
 
  >ccc`
 

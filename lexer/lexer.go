@@ -2,6 +2,7 @@ package lexer
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/roronya/sokki/token"
 )
@@ -16,46 +17,52 @@ type Lexer struct {
 }
 
 func New(input string) *Lexer {
-	l := &Lexer{input: []rune(input), position: 0}
+	trimed := strings.TrimSpace(input) // 行末の判定を簡単にするためにtrimしておく
+	l := &Lexer{input: []rune(trimed), position: 0}
 	return l
 }
 
-// 各トークンに一致するか正規表現で調べる
-// positionは一致した文字列のruneのサイズだけ進める
-// newTokenでは進めたサイズだけ減らしてスライスする
 func (l *Lexer) NextToken() token.Token {
-	var tok token.Token
 	if l.position >= len(l.input) {
-		return newToken(token.EOD, []rune(""))
+		return newToken(token.EOD, "")
 	}
 	if l.input[l.position] == '\n' {
 		l.position++
-		return newToken(token.NEWLINE, l.input[l.position-1:l.position])
+		return newToken(token.NEWLINE, "\n")
 	}
 
-	s := string(l.input[l.position:])
-	pr := PARAGRAPH_REGEXP.FindStringSubmatch(s)
-	if pr != nil {
-		size := len([]rune(pr[1])) // グルーピングした箇所が知りたいので1でアクセスする
-		l.position += size
-		return newToken(token.PARAGRAPH, l.input[l.position-size:l.position])
+	// 行単位で処理すると楽なので、現在のポジションから改行までを取得する
+	row := strings.SplitN(string(l.input[l.position:]), "\n", 2)[0]
+	//fmt.Printf("row: %#v\n", row)
+	//fmt.Printf("position: %#v\n", l.position)
+	//fmt.Printf("%#v\n", string(l.input[l.position]))
+	var tok token.Token
+	switch {
+	case l.position >= len(l.input):
+		tok = newToken(token.EOD, "")
+	case l.input[l.position] == '\n':
+		tok = newToken(token.NEWLINE, "\n")
+		l.position++
+	case string(l.input[l.position:l.position+4]) == " >>\n":
+		tok = newToken(token.MORESHIFT, " >>")
+		l.position += 3
+	case row == " >":
+		tok = newToken(token.SHIFT, " >")
+		l.position += 2
+	case strings.HasSuffix(row, " >>"):
+		tok = newToken(token.PARAGRAPH, row[:len(row)-3])
+		l.position += len([]rune(row)) - 3
+	case strings.HasSuffix(row, " >"):
+		tok = newToken(token.PARAGRAPH, row[:len(row)-2])
+		l.position += len([]rune(row)) - 2
+	default:
+		tok = newToken(token.PARAGRAPH, row)
+		l.position += len([]rune(row))
 	}
-	// SHIFTがマッチしてしまうので、先にMORESHIFTにマッチしてないか調べる
-	msh := MORESHIFT_REGEXP.FindStringSubmatch(s)
-	if msh != nil {
-		size := len([]rune(msh[0]))
-		l.position += size
-		return newToken(token.MORESHIFT, l.input[l.position-size:l.position])
-	}
-	sh := SHIFT_REGEXP.FindStringSubmatch(s)
-	if sh != nil {
-		size := len([]rune(sh[0])) // グルーピングはしていないので0でアクセスする
-		l.position += size
-		return newToken(token.SHIFT, l.input[l.position-size:l.position])
-	}
+
 	return tok
 }
 
-func newToken(tokenType token.TokenType, literal []rune) token.Token {
-	return token.Token{Type: tokenType, Literal: string(literal)}
+func newToken(tokenType token.TokenType, literal string) token.Token {
+	return token.Token{Type: tokenType, Literal: literal}
 }

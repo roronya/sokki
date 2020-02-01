@@ -7,15 +7,26 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	input := "abc"
-	l := New(input)
-
-	if string(l.input) != "abc" {
-		t.Fatalf("input is not abc. got=%s", string(l.input))
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"abc", "abc"},
+		{" abc \n", "abc"},
+		{" あいう　\n", "あいう"},
 	}
+	for _, tt := range tests {
+		l := New(tt.input)
 
-	if l.position != 0 {
-		t.Fatalf("position is not 0. got=%d", l.position)
+		if string(l.input) != tt.expected {
+			t.Fatalf("input is not %s. got=%s",
+				tt.expected, string(l.input))
+		}
+
+		if l.position != 0 {
+			t.Fatalf("position is not 0. got=%d",
+				l.position)
+		}
 	}
 
 }
@@ -58,7 +69,6 @@ func TestNextToken(t *testing.T) {
 		{token.NEWLINE, "\n"},
 		{token.NEWLINE, "\n"},
 		{token.PARAGRAPH, "私立リリアン女学園。ここは乙女の園。"},
-		{token.NEWLINE, "\n"},
 		{token.EOD, ""},
 	}
 
@@ -67,7 +77,31 @@ func TestNextToken(t *testing.T) {
 	for i, tt := range tests {
 		tok := l.NextToken()
 		if tok.Type != tt.expectedType {
-			t.Fatalf("tests[%d] - Literal wrong. expected=%q, got=%q", i, tt.expectedLiteral, tok.Literal)
+			t.Fatalf("tests[%d] - Literal wrong. expected=%q, got=%q",
+				i, tt.expectedType, tok.Type)
 		}
+	}
+}
+
+func TestNextTokenWithSpace(t *testing.T) {
+	input := ` aaa`
+	l := New(input)
+
+	tok := l.NextToken()
+	if tok.Type != token.PARAGRAPH {
+		t.Fatalf("Literal wrong. expected=%q, got=%q",
+			" aaa", tok.Literal)
+	}
+
+}
+
+func TestNextTokenWithShiftLiteral(t *testing.T) {
+	input := `aaa >>bbb`
+	l := New(input)
+
+	tok := l.NextToken()
+	if tok.Type != token.PARAGRAPH {
+		t.Fatalf("Literal wrong. expected=%q, got=%q",
+			"aaa >>bbb", tok.Literal)
 	}
 }
