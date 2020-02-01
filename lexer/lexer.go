@@ -6,9 +6,9 @@ import (
 	"github.com/roronya/sokki/token"
 )
 
-var SHIFT_REGEXP = regexp.MustCompile(`^ >$`)
-var MORESHIFT_REGEXP = regexp.MustCompile(`^ >>$`)
-var PARAGRAPH_REGEXP = regexp.MustCompile(`^([^\n]*)`) //TODO SHIFTの対応
+var SHIFT_REGEXP = regexp.MustCompile(`^ >`)
+var MORESHIFT_REGEXP = regexp.MustCompile(`^ >>`)
+var PARAGRAPH_REGEXP = regexp.MustCompile(`^([^\n( >)( >>)]+)`)
 
 type Lexer struct {
 	input    []rune
@@ -32,14 +32,27 @@ func (l *Lexer) NextToken() token.Token {
 		l.position++
 		return newToken(token.NEWLINE, l.input[l.position-1:l.position])
 	}
+
 	s := string(l.input[l.position:])
 	pr := PARAGRAPH_REGEXP.FindStringSubmatch(s)
 	if pr != nil {
-		size := len([]rune(pr[1]))
+		size := len([]rune(pr[1])) // グルーピングした箇所が知りたいので1でアクセスする
 		l.position += size
 		return newToken(token.PARAGRAPH, l.input[l.position-size:l.position])
 	}
-	// TODO: SHIFTの抜き出し
+	// SHIFTがマッチしてしまうので、先にMORESHIFTにマッチしてないか調べる
+	msh := MORESHIFT_REGEXP.FindStringSubmatch(s)
+	if msh != nil {
+		size := len([]rune(msh[0]))
+		l.position += size
+		return newToken(token.MORESHIFT, l.input[l.position-size:l.position])
+	}
+	sh := SHIFT_REGEXP.FindStringSubmatch(s)
+	if sh != nil {
+		size := len([]rune(sh[0])) // グルーピングはしていないので0でアクセスする
+		l.position += size
+		return newToken(token.SHIFT, l.input[l.position-size:l.position])
+	}
 	return tok
 }
 
