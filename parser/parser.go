@@ -63,14 +63,23 @@ func (p *Parser) parseSection(id int) *ast.Section {
 		Right:  []*ast.Paragraph{},
 	}
 	for p.curToken.Type != token.EOD && p.curToken.Type != token.NEWLINE {
-		// TODO: SHIFTやMORESHIFTの対応
 		if p.curToken.Type == token.PARAGRAPH {
 			pr := &ast.Paragraph{
 				Token: p.curToken,
 				Value: p.curToken.Literal,
 			}
-			s.Left = append(s.Left, pr)
 			p.nextToken()
+
+			switch p.curToken.Type {
+			case token.SHIFT:
+				s.Middle = append(s.Middle, pr)
+				p.nextToken()
+			case token.MORESHIFT:
+				s.Right = append(s.Right, pr)
+				p.nextToken()
+			default:
+				s.Left = append(s.Left, pr)
+			}
 
 			if p.curToken.Type == token.NEWLINE {
 				p.nextToken()

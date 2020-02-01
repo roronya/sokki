@@ -77,3 +77,23 @@ func (pr *Paragraph) TokenLiteral() string {
 func (pr *Paragraph) String() string {
 	return pr.Value
 }
+
+type SuffixExpression struct {
+	Token    token.Token
+	Operator string
+	Left     Expression
+}
+
+func (se *SuffixExpression) expressionNode() {}
+func (se *SuffixExpression) TokenLiteral() string {
+	return se.Token.Literal
+}
+func (se *SuffixExpression) String() string {
+	var out bytes.Buffer
+	out.WriteString("(")
+	out.WriteString(se.Left.String())
+	out.WriteString(se.Operator)
+	out.WriteString(")")
+
+	return out.String()
+}
