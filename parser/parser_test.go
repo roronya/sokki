@@ -137,6 +137,50 @@ bbb
 	}
 }
 
+func TestStartWithoutParagraph(t *testing.T) {
+	input := ` >>aaa
+bbb
+
+ >ccc`
+
+	l := lexer.New(input)
+	p := New(l)
+	dcmt := p.ParseDocument()
+	if len(dcmt.Sections) != 2 {
+		t.Errorf("dcmt.Section does not contain 2 section. got=%d",
+			len(dcmt.Sections))
+	}
+
+	s := dcmt.Sections[0]
+	if len(s.Left) != 2 {
+		t.Fatalf("s.Left does not contain 2 section. got=%d",
+			len(s.Left))
+	}
+	if len(s.Middle) != 0 {
+		t.Fatalf("s.Middle does not contain 0 section. got=%d",
+			len(s.Middle))
+	}
+	if len(s.Right) != 0 {
+		t.Fatalf("s.Right does not contain 0 section. got=%d",
+			len(s.Right))
+	}
+
+	s = dcmt.Sections[1]
+	if len(s.Left) != 1 {
+		t.Fatalf("s.Left does not contain 1 section. got=%d",
+			len(s.Left))
+	}
+	if len(s.Middle) != 0 {
+		t.Fatalf("s.Middle does not contain 0 section. got=%d",
+			len(s.Middle))
+	}
+	if len(s.Right) != 0 {
+		t.Fatalf("s.Right does not contain 0 section. got=%d",
+			len(s.Right))
+	}
+
+}
+
 func testParagraph(t *testing.T, pr *ast.Paragraph, e string) bool {
 	if pr.Token.Type != token.PARAGRAPH {
 		t.Errorf("pr is not PARAGRAPH. got=%T", pr)
