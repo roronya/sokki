@@ -8,7 +8,7 @@ import (
 	"github.com/roronya/sokki/token"
 )
 
-func TestLeftParagraph(t *testing.T) {
+func TestParagraph(t *testing.T) {
 	input := `マリア様の庭に集う少女たちが、
 今日も天使のような無垢な笑顔で、 >
 背の高い門をくぐり抜けていく。 >>
