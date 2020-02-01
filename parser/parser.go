@@ -44,6 +44,9 @@ func (p *Parser) ParseDocument() *ast.Document {
 	}
 	id := 0
 	for p.curToken.Type != token.EOD {
+		// Paragraphでなければ異常な入力なので読み飛ばす
+		p.skipUntilParagraph()
+
 		s := p.parseSection(id)
 		if s != nil {
 			dcmt.Sections = append(dcmt.Sections, s)
@@ -55,7 +58,6 @@ func (p *Parser) ParseDocument() *ast.Document {
 }
 
 func (p *Parser) parseSection(id int) *ast.Section {
-	// TODO: skip NEWLINE
 	s := &ast.Section{
 		Id:     id,
 		Left:   []*ast.Paragraph{},
@@ -63,29 +65,39 @@ func (p *Parser) parseSection(id int) *ast.Section {
 		Right:  []*ast.Paragraph{},
 	}
 	for p.curToken.Type != token.EOD && p.curToken.Type != token.NEWLINE {
-		if p.curToken.Type == token.PARAGRAPH {
-			pr := &ast.Paragraph{
-				Token: p.curToken,
-				Value: p.curToken.Literal,
-			}
+		// 常にcurTokenがParagraphになるようにしているので、
+		// Paragraphが来なければ異常な入力なのでSectionを返して抜ける
+		if p.curToken.Type != token.PARAGRAPH {
+			return s
+		}
+
+		pr := &ast.Paragraph{
+			Token: p.curToken,
+			Value: p.curToken.Literal,
+		}
+		p.nextToken()
+
+		switch p.curToken.Type {
+		case token.SHIFT:
+			s.Middle = append(s.Middle, pr)
 			p.nextToken()
+		case token.MORESHIFT:
+			s.Right = append(s.Right, pr)
+			p.nextToken()
+		default:
+			s.Left = append(s.Left, pr)
+		}
 
-			switch p.curToken.Type {
-			case token.SHIFT:
-				s.Middle = append(s.Middle, pr)
-				p.nextToken()
-			case token.MORESHIFT:
-				s.Right = append(s.Right, pr)
-				p.nextToken()
-			default:
-				s.Left = append(s.Left, pr)
-			}
-
-			if p.curToken.Type == token.NEWLINE {
-				p.nextToken()
-			}
+		if p.curToken.Type == token.NEWLINE {
+			p.nextToken()
 		}
 	}
 
 	return s
+}
+
+func (p *Parser) skipUntilParagraph() {
+	for p.curToken.Type != token.PARAGRAPH {
+		p.nextToken()
+	}
 }

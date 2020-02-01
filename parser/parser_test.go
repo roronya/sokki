@@ -106,6 +106,37 @@ func TestParagraph(t *testing.T) {
 	}
 }
 
+func TestSkipUntilParagraph(t *testing.T) {
+	input := `
+
+aaa
+
+ >>
+
+ >
+
+bbb
+`
+
+	l := lexer.New(input)
+	p := New(l)
+	dcmt := p.ParseDocument()
+	if len(dcmt.Sections) != 2 {
+		t.Errorf("dcmt.Section does not contain 1 section. got=%d",
+			len(dcmt.Sections))
+	}
+
+	pr := dcmt.Sections[0].Left[0]
+	if !testParagraph(t, pr, "aaa") {
+		return
+	}
+
+	pr = dcmt.Sections[1].Left[0]
+	if !testParagraph(t, pr, "bbb") {
+		return
+	}
+}
+
 func testParagraph(t *testing.T, pr *ast.Paragraph, e string) bool {
 	if pr.Token.Type != token.PARAGRAPH {
 		t.Errorf("pr is not PARAGRAPH. got=%T", pr)
