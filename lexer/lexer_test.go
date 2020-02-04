@@ -105,3 +105,36 @@ func TestNextTokenWithShiftLiteral(t *testing.T) {
 			"aaa >>bbb", tok.Literal)
 	}
 }
+
+// MORESHIFTのtokenizeをバグらせてたから追加した
+func TestNextToken2(t *testing.T) {
+	input := `hoge
+hoge >
+hoge >>
+`
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.PARAGRAPH, "hoge"},
+		{token.NEWLINE, "\n"},
+		{token.PARAGRAPH, "hoge"},
+		{token.SHIFT, " >"},
+		{token.NEWLINE, "\n"},
+		{token.PARAGRAPH, "hoge"},
+		{token.MORESHIFT, " >>"},
+		{token.EOD, ""},
+	}
+
+	l := New(input)
+
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - Literal wrong. expected=%q, got=%q",
+				i, tt.expectedType, tok.Type)
+		}
+	}
+
+}

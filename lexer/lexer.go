@@ -43,7 +43,7 @@ func (l *Lexer) NextToken() token.Token {
 	case l.input[l.position] == '\n':
 		tok = newToken(token.NEWLINE, "\n")
 		l.position++
-	case string(l.input[l.position:l.position+4]) == " >>\n":
+	case row == " >>":
 		tok = newToken(token.MORESHIFT, " >>")
 		l.position += 3
 	case row == " >":
