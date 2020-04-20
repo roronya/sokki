@@ -1,15 +1,10 @@
 package lexer
 
 import (
-	"regexp"
 	"strings"
 
 	"github.com/roronya/sokki/token"
 )
-
-var SHIFT_REGEXP = regexp.MustCompile(`^ >`)
-var MORESHIFT_REGEXP = regexp.MustCompile(`^ >>`)
-var PARAGRAPH_REGEXP = regexp.MustCompile(`^([^\n( >)( >>)]+)`)
 
 type Lexer struct {
 	input    []rune
