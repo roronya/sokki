@@ -12,8 +12,8 @@ type Lexer struct {
 }
 
 func New(input string) *Lexer {
-	trimed := strings.TrimSpace(input) // 行末の判定を簡単にするためにtrimしておく
-	l := &Lexer{input: []rune(trimed), position: 0}
+	trimmed := strings.TrimSpace(input) // 行末の判定を簡単にするためにtrimしておく
+	l := &Lexer{input: []rune(trimmed), position: 0}
 	return l
 }
 
