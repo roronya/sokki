@@ -33,11 +33,6 @@ func (l *Lexer) NextToken() token.Token {
 	//fmt.Printf("%#v\n", string(l.input[l.position]))
 	var tok token.Token
 	switch {
-	case l.position >= len(l.input):
-		tok = newToken(token.EOD, "")
-	case l.input[l.position] == '\n':
-		tok = newToken(token.NEWLINE, "\n")
-		l.position++
 	case row == " >>":
 		tok = newToken(token.MORESHIFT, " >>")
 		l.position += 3
