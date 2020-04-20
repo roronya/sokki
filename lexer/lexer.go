@@ -41,13 +41,13 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.SHIFT, " >")
 		l.position += 2
 	case strings.HasSuffix(row, " >>"):
-		tok = newToken(token.PARAGRAPH, row[:len(row)-3])
+		tok = newToken(token.STRING, row[:len(row)-3])
 		l.position += len([]rune(row)) - 3
 	case strings.HasSuffix(row, " >"):
-		tok = newToken(token.PARAGRAPH, row[:len(row)-2])
+		tok = newToken(token.STRING, row[:len(row)-2])
 		l.position += len([]rune(row)) - 2
 	default:
-		tok = newToken(token.PARAGRAPH, row)
+		tok = newToken(token.STRING, row)
 		l.position += len([]rune(row))
 	}
 

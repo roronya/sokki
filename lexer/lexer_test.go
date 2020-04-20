@@ -48,27 +48,27 @@ func TestNextToken(t *testing.T) {
 		expectedType    token.TokenType
 		expectedLiteral string
 	}{
-		{token.PARAGRAPH, "マリア様の庭に集う少女たちが、"},
+		{token.STRING, "マリア様の庭に集う少女たちが、"},
 		{token.NEWLINE, "\n"},
-		{token.PARAGRAPH, "今日も天使のような無垢な笑顔で、"},
+		{token.STRING, "今日も天使のような無垢な笑顔で、"},
 		{token.SHIFT, " >"},
 		{token.NEWLINE, "\n"},
-		{token.PARAGRAPH, "背の高い門をくぐり抜けていく。"},
+		{token.STRING, "背の高い門をくぐり抜けていく。"},
 		{token.MORESHIFT, " >>"},
 		{token.NEWLINE, "\n"},
 		{token.NEWLINE, "\n"},
-		{token.PARAGRAPH, "汚れを知らない心身を包むのは、深い色の制服。"},
+		{token.STRING, "汚れを知らない心身を包むのは、深い色の制服。"},
 		{token.NEWLINE, "\n"},
-		{token.PARAGRAPH, "スカートのプリーツは乱さないように、"},
+		{token.STRING, "スカートのプリーツは乱さないように、"},
 		{token.MORESHIFT, " >>"},
 		{token.NEWLINE, "\n"},
-		{token.PARAGRAPH, "白いセーラーカラーは翻さないように、"},
+		{token.STRING, "白いセーラーカラーは翻さないように、"},
 		{token.SHIFT, " >"},
 		{token.NEWLINE, "\n"},
-		{token.PARAGRAPH, "ゆっくりと歩くのが、ここでのたしなみ。"},
+		{token.STRING, "ゆっくりと歩くのが、ここでのたしなみ。"},
 		{token.NEWLINE, "\n"},
 		{token.NEWLINE, "\n"},
-		{token.PARAGRAPH, "私立リリアン女学園。ここは乙女の園。"},
+		{token.STRING, "私立リリアン女学園。ここは乙女の園。"},
 		{token.EOD, ""},
 	}
 
@@ -88,7 +88,7 @@ func TestNextTokenWithSpace(t *testing.T) {
 	l := New(input)
 
 	tok := l.NextToken()
-	if tok.Type != token.PARAGRAPH {
+	if tok.Type != token.STRING {
 		t.Fatalf("Literal wrong. expected=%q, got=%q", " aaa", tok.Literal)
 	}
 	tok = l.NextToken()
@@ -102,7 +102,7 @@ func TestNextTokenWithShiftLiteral(t *testing.T) {
 	l := New(input)
 
 	tok := l.NextToken()
-	if tok.Type != token.PARAGRAPH {
+	if tok.Type != token.STRING {
 		t.Fatalf("Literal wrong. expected=%q, got=%q",
 			"aaa >>bbb", tok.Literal)
 	}
@@ -119,12 +119,12 @@ hoge >>
 		expectedType    token.TokenType
 		expectedLiteral string
 	}{
-		{token.PARAGRAPH, "hoge"},
+		{token.STRING, "hoge"},
 		{token.NEWLINE, "\n"},
-		{token.PARAGRAPH, "hoge"},
+		{token.STRING, "hoge"},
 		{token.SHIFT, " >"},
 		{token.NEWLINE, "\n"},
-		{token.PARAGRAPH, "hoge"},
+		{token.STRING, "hoge"},
 		{token.MORESHIFT, " >>"},
 		{token.EOD, ""},
 	}

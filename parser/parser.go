@@ -67,7 +67,7 @@ func (p *Parser) parseSection(id int) *ast.Section {
 	for p.curToken.Type != token.EOD && p.curToken.Type != token.NEWLINE {
 		// 常にcurTokenがParagraphになるようにしているので、
 		// Paragraphが来なければ異常な入力なのでSectionを返して抜ける
-		if p.curToken.Type != token.PARAGRAPH {
+		if p.curToken.Type != token.STRING {
 			return s
 		}
 
@@ -97,7 +97,7 @@ func (p *Parser) parseSection(id int) *ast.Section {
 }
 
 func (p *Parser) skipUntilParagraph() {
-	for p.curToken.Type != token.PARAGRAPH {
+	for p.curToken.Type != token.STRING {
 		p.nextToken()
 	}
 }

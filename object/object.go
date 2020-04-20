@@ -5,7 +5,7 @@ import "fmt"
 type ObjectType string
 
 const (
-	PARAGRAPH_OBJ = "PARAGRAPH"
+	STRING_OBJ = "STRING"
 )
 
 type Object interface {
@@ -17,5 +17,5 @@ type Paragraph struct {
 	Value string
 }
 
-func (pr *Paragraph) Type() string    { return PARAGRAPH_OBJ }
+func (pr *Paragraph) Type() string    { return STRING_OBJ }
 func (pr *Paragraph) Inspect() string { return fmt.Sprintf("<p>%s</p>", pr.Value) }

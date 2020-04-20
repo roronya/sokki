@@ -10,7 +10,7 @@ type Token struct {
 const (
 	EOD       = "EOD" // End Of Document
 	NEWLINE   = "NEWLINE"
-	PARAGRAPH = "PARAGRAPH"
+	STRING    = "STRING"
 	SHIFT     = " >"
 	MORESHIFT = " >>"
 )

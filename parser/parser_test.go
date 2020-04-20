@@ -182,8 +182,8 @@ func TestStartWithoutParagraph(t *testing.T) {
 }
 
 func testParagraph(t *testing.T, pr *ast.Paragraph, e string) bool {
-	if pr.Token.Type != token.PARAGRAPH {
-		t.Errorf("pr is not PARAGRAPH. got=%T", pr)
+	if pr.Token.Type != token.STRING {
+		t.Errorf("pr is not STRING. got=%T", pr)
 		return false
 	}
 
