@@ -89,10 +89,12 @@ func TestNextTokenWithSpace(t *testing.T) {
 
 	tok := l.NextToken()
 	if tok.Type != token.PARAGRAPH {
-		t.Fatalf("Literal wrong. expected=%q, got=%q",
-			" aaa", tok.Literal)
+		t.Fatalf("Literal wrong. expected=%q, got=%q", " aaa", tok.Literal)
 	}
-
+	tok = l.NextToken()
+	if tok.Type != token.EOD {
+		t.Fatalf("Literal wrong. expected=%q, got=%q", "", tok.Literal)
+	}
 }
 
 func TestNextTokenWithShiftLiteral(t *testing.T) {

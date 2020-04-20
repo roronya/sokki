@@ -27,6 +27,7 @@ func (l *Lexer) NextToken() token.Token {
 	}
 
 	// 行単位で処理すると楽なので、現在のポジションから改行までを取得する
+	// 改行が無い場合は行末までを取得する
 	row := strings.SplitN(string(l.input[l.position:]), "\n", 2)[0]
 	//fmt.Printf("row: %#v\n", row)
 	//fmt.Printf("position: %#v\n", l.position)
