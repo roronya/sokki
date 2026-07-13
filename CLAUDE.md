@@ -8,14 +8,6 @@ Sokki is a markup language for note-taking ("速記" = shorthand). It compiles `
 
 ## Commands
 
-The repository has no `go.mod` (it predates Go modules; the import path is `github.com/roronya/sokki`). To build or test locally, first run:
-
-```shell
-go mod init github.com/roronya/sokki
-```
-
-Do not commit the generated `go.mod` unless asked to.
-
 - Run all tests: `go test ./...`
 - Run one package's tests: `go test ./lexer`
 - Run a single test: `go test ./parser -run TestParseDocument`
@@ -34,6 +26,5 @@ source text → lexer → parser → AST → evaluator → HTML string
 - **ast**: `Document` → `[]*Section` → each Section holds `Left`/`Middle`/`Right` slices of `*Paragraph`. A `Section` corresponds to a blank-line-separated block and carries an `Id` used as the grid row.
 - **parser**: `ParseDocument` loops over sections; `parseSection` reads a paragraph, then looks at the following token to decide which column (`SHIFT` → Middle, `MORESHIFT` → Right, otherwise Left). Maintains the `curToken`/`peekToken` two-token window. Malformed input is skipped rather than reported (the `errors` field is currently unused).
 - **evaluator**: `Eval` renders the AST into an HTML page (template with inline CSS grid in `evaluator.go`). Paragraphs of all sections are grouped by column, with `grid-row: Id+1` placing each section on its row.
-- **object**: vestigial from the Monkey interpreter scaffold; not used in the pipeline.
 
 Tests are table-driven and live alongside each package (`lexer`, `parser`, `evaluator`). Comments and commit messages are in Japanese; follow that convention.

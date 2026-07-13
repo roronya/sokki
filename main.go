@@ -1,7 +1,6 @@
 package main
 
 import (
-	"io/ioutil"
 	"log"
 	"os"
 
@@ -12,10 +11,10 @@ import (
 
 func main() {
 	if len(os.Args) != 3 {
-		log.Fatal("invalid arguments. usage: sokki input_file outpu_file")
+		log.Fatal("invalid arguments. usage: sokki input_file output_file")
 	}
 
-	bs, err := ioutil.ReadFile(os.Args[1])
+	bs, err := os.ReadFile(os.Args[1])
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -26,7 +25,7 @@ func main() {
 	ast := p.ParseDocument()
 	evaluated := evaluator.Eval(ast)
 
-	err = ioutil.WriteFile(os.Args[2], []byte(evaluated), 0644)
+	err = os.WriteFile(os.Args[2], []byte(evaluated), 0644)
 	if err != nil {
 		log.Fatal(err)
 	}
