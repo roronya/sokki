@@ -46,6 +46,9 @@ func (p *Parser) ParseDocument() *ast.Document {
 	for p.curToken.Type != token.EOD {
 		// Paragraphでなければ異常な入力なので読み飛ばす
 		p.skipUntilParagraph()
+		if p.curToken.Type == token.EOD {
+			break
+		}
 
 		s := p.parseSection(id)
 		if s != nil {
@@ -97,7 +100,8 @@ func (p *Parser) parseSection(id int) *ast.Section {
 }
 
 func (p *Parser) skipUntilParagraph() {
-	for p.curToken.Type != token.STRING {
+	// EODでも止まらないと、記号だけで終わる入力で無限ループする
+	for p.curToken.Type != token.STRING && p.curToken.Type != token.EOD {
 		p.nextToken()
 	}
 }

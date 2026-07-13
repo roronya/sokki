@@ -22,9 +22,9 @@ source text → lexer → parser → AST → evaluator → HTML string
 ```
 
 - **token**: token types. Only five exist: `STRING` (a line's text), `SHIFT` (` >`), `MORESHIFT` (` >>`), `NEWLINE`, `EOD` (end of document).
-- **lexer**: line-oriented, not character-oriented. `NextToken` grabs everything up to the next `\n`, then checks for a trailing ` >`/` >>` suffix (emitting the `STRING` first, then the shift token on the next call). Input is trimmed and handled as `[]rune` — position arithmetic must count runes, not bytes, because input is typically Japanese text.
+- **lexer**: line-oriented, not character-oriented. `NextToken` grabs everything up to the next `\n`, then checks for a trailing shift marker (emitting the `STRING` first, then the shift token on the next call). A marker is a half- or full-width space followed by one or two `>`/`＞` (three or more `>` is literal text); a trailing ` \>` / ` \>>` is an escape for a literal marker. CRLF is normalized to LF. Input is trimmed and handled as `[]rune` — position arithmetic must count runes, not bytes, because input is typically Japanese text.
 - **ast**: `Document` → `[]*Section` → each Section holds `Left`/`Middle`/`Right` slices of `*Paragraph`. A `Section` corresponds to a blank-line-separated block and carries an `Id` used as the grid row.
 - **parser**: `ParseDocument` loops over sections; `parseSection` reads a paragraph, then looks at the following token to decide which column (`SHIFT` → Middle, `MORESHIFT` → Right, otherwise Left). Maintains the `curToken`/`peekToken` two-token window. Malformed input is skipped rather than reported (the `errors` field is currently unused).
-- **evaluator**: `Eval` renders the AST into an HTML page (template with inline CSS grid in `evaluator.go`). Paragraphs of all sections are grouped by column, with `grid-row: Id+1` placing each section on its row.
+- **evaluator**: `Eval` renders the AST into an HTML page (template with inline CSS grid in `evaluator.go`). Paragraph text is HTML-escaped. Paragraphs of all sections are grouped by column, with `grid-row: Id+1` placing each section on its row. `resource/result.html` is generated from `resource/test.sk`; regenerate it when the template changes.
 
 Tests are table-driven and live alongside each package (`lexer`, `parser`, `evaluator`). Comments and commit messages are in Japanese; follow that convention.

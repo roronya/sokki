@@ -181,6 +181,23 @@ func TestStartWithoutParagraph(t *testing.T) {
 
 }
 
+// 空行の後にシフト記号だけが来て終わる入力で無限ループしていた
+func TestBareShiftAtEOD(t *testing.T) {
+	input := "abc\n\n >"
+
+	l := lexer.New(input)
+	p := New(l)
+	dcmt := p.ParseDocument()
+
+	if len(dcmt.Sections) != 1 {
+		t.Fatalf("dcmt.Sections does not contain 1 section. got=%d",
+			len(dcmt.Sections))
+	}
+	if !testParagraph(t, dcmt.Sections[0].Left[0], "abc") {
+		return
+	}
+}
+
 func testParagraph(t *testing.T, pr *ast.Paragraph, e string) bool {
 	if pr.Token.Type != token.STRING {
 		t.Errorf("pr is not STRING. got=%T", pr)

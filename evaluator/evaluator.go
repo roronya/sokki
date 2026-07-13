@@ -2,12 +2,16 @@ package evaluator
 
 import (
 	"fmt"
+	"html"
 
 	"github.com/roronya/sokki/ast"
 )
 
-const TEMPLATE = `<html>
+const TEMPLATE = `<!DOCTYPE html>
+<html lang="ja">
 <head>
+<meta charset="utf-8">
+<title>sokki</title>
 <style>
 body {
 display: grid;
@@ -30,8 +34,9 @@ background-color: #ECECEC;
 grid-column: 3;
 }
 </style>
-%s
-</html>`
+</head>
+%s</html>
+`
 
 func Eval(node ast.Node) string {
 	switch node := node.(type) {
@@ -39,7 +44,8 @@ func Eval(node ast.Node) string {
 		body := evalDocument(node)
 		return fmt.Sprintf(TEMPLATE, body)
 	case *ast.Paragraph:
-		return fmt.Sprintf("<p>%s</p>\n", node.Value)
+		// 入力をそのまま埋め込むと<や&でHTMLが壊れるのでエスケープする
+		return fmt.Sprintf("<p>%s</p>\n", html.EscapeString(node.Value))
 	}
 	return ""
 }

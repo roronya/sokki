@@ -1,6 +1,7 @@
 package evaluator
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/roronya/sokki/lexer"
@@ -54,5 +55,42 @@ func TestEvalDocument(t *testing.T) {
 </body>
 ` {
 		t.Errorf("result is invalid. got=%s", result)
+	}
+}
+
+// 入力に含まれるHTML特殊文字はエスケープして出力する
+func TestEvalEscapesHTML(t *testing.T) {
+	input := "<script>alert(1)</script>\n"
+	l := lexer.New(input)
+	p := parser.New(l)
+	ast := p.ParseDocument()
+
+	result := Eval(ast)
+	if strings.Contains(result, "<script>") {
+		t.Errorf("result contains raw <script>. got=%s", result)
+	}
+	if !strings.Contains(result, "<p>&lt;script&gt;alert(1)&lt;/script&gt;</p>") {
+		t.Errorf("result does not contain escaped paragraph. got=%s", result)
+	}
+}
+
+// 出力はcharset宣言を持つ完全なHTMLになっている
+func TestEvalTemplate(t *testing.T) {
+	input := "hoge\n"
+	l := lexer.New(input)
+	p := parser.New(l)
+	ast := p.ParseDocument()
+
+	result := Eval(ast)
+	for _, want := range []string{
+		"<!DOCTYPE html>",
+		`<html lang="ja">`,
+		`<meta charset="utf-8">`,
+		"</head>",
+		"</html>",
+	} {
+		if !strings.Contains(result, want) {
+			t.Errorf("result does not contain %q. got=%s", want, result)
+		}
 	}
 }

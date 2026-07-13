@@ -108,6 +108,117 @@ func TestNextTokenWithShiftLiteral(t *testing.T) {
 	}
 }
 
+// 全角スペース・全角＞もシフト記号として認識する
+// 日本語入力中にIMEを切り替えなくても済むようにするため
+func TestNextTokenFullWidth(t *testing.T) {
+	input := "メモ　＞\nメモ ＞＞\nメモ　>>"
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.STRING, "メモ"},
+		{token.SHIFT, "　＞"},
+		{token.NEWLINE, "\n"},
+		{token.STRING, "メモ"},
+		{token.MORESHIFT, " ＞＞"},
+		{token.NEWLINE, "\n"},
+		{token.STRING, "メモ"},
+		{token.MORESHIFT, "　>>"},
+		{token.EOD, ""},
+	}
+
+	l := New(input)
+
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - Type wrong. expected=%q, got=%q",
+				i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong. expected=%q, got=%q",
+				i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
+// 「 \>」はエスケープとして扱い、リテラルの「 >」になる
+func TestNextTokenEscape(t *testing.T) {
+	input := "値 \\>\n値 \\>>\n値 \\> >"
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.STRING, "値 >"},
+		{token.NEWLINE, "\n"},
+		{token.STRING, "値 >>"},
+		{token.NEWLINE, "\n"},
+		{token.STRING, "値 >"},
+		{token.SHIFT, " >"},
+		{token.EOD, ""},
+	}
+
+	l := New(input)
+
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - Type wrong. expected=%q, got=%q",
+				i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong. expected=%q, got=%q",
+				i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
+// '>'が3つ以上並ぶ場合はシフト記号とみなさない
+func TestNextTokenTripleShift(t *testing.T) {
+	input := "記録 >>>"
+	l := New(input)
+
+	tok := l.NextToken()
+	if tok.Type != token.STRING {
+		t.Fatalf("Type wrong. expected=%q, got=%q", token.STRING, tok.Type)
+	}
+	if tok.Literal != "記録 >>>" {
+		t.Fatalf("Literal wrong. expected=%q, got=%q", "記録 >>>", tok.Literal)
+	}
+}
+
+// CRLF改行でもシフト記号を認識する
+func TestNextTokenCRLF(t *testing.T) {
+	input := "hoge >\r\nfuga"
+
+	tests := []struct {
+		expectedType    token.TokenType
+		expectedLiteral string
+	}{
+		{token.STRING, "hoge"},
+		{token.SHIFT, " >"},
+		{token.NEWLINE, "\n"},
+		{token.STRING, "fuga"},
+		{token.EOD, ""},
+	}
+
+	l := New(input)
+
+	for i, tt := range tests {
+		tok := l.NextToken()
+		if tok.Type != tt.expectedType {
+			t.Fatalf("tests[%d] - Type wrong. expected=%q, got=%q",
+				i, tt.expectedType, tok.Type)
+		}
+		if tok.Literal != tt.expectedLiteral {
+			t.Fatalf("tests[%d] - Literal wrong. expected=%q, got=%q",
+				i, tt.expectedLiteral, tok.Literal)
+		}
+	}
+}
+
 // MORESHIFTのtokenizeをバグらせてたから追加した
 func TestNextToken2(t *testing.T) {
 	input := `hoge
